@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "bulma": "^1.0.0",
     "pinia": "^2.1.7",
     "save": "^2.9.0",
     "vue": "^3.4.15",

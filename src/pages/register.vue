@@ -4,7 +4,12 @@
       <!-- Username -->
 
       <label for="username">Username: </label>
-      <input class="form-input" type="text" id="username" v-model="form.username" />
+      <input
+        class="form-input"
+        type="text"
+        id="username"
+        v-model="form.username"
+      />
 
       <validationerrors :errors="validation_errors.username"></validationerrors>
 
@@ -14,9 +19,6 @@
       <input class="form-input" type="text" id="email" v-model="form.email" />
 
       <validationerrors :errors="validation_errors.email"></validationerrors>
-
-      
-
       <!-- Password -->
 
       <label for="password">Password: </label>
@@ -29,7 +31,6 @@
 
       <validationerrors :errors="validation_errors.password"></validationerrors>
 
-
       <!-- Repassword -->
 
       <label for="repassword">RePassword: </label>
@@ -40,10 +41,14 @@
         v-model="form.repassword"
       />
 
-      <validationerrors :errors="validation_errors.repassword"></validationerrors>
+      <validationerrors
+        :errors="validation_errors.repassword"
+      ></validationerrors>
 
       <button class="button" type="submit">Sign Up</button>
-      <button class="button gray" id="loginButton" @click="$router.push('/')">Login</button>
+      <button class="button gray" id="loginButton" @click="$router.push('/')">
+        Login
+      </button>
     </form>
   </div>
 </template>
@@ -69,54 +74,53 @@ export default {
         username: ["required", "min:3"],
         email: ["required", "min:8", "email"],
         password: ["required", "min:5"],
-        repassword: ["required", "min:5"]
+        repassword: ["required", "min:5"],
       },
       validation_errors: {},
     };
   },
   methods: {
-    log() {
-      this.$router.push("/");
-    },
-    empt() {
-      if (this.validation === false) {
-        console.log("error");
-      }
-    },
-    register() {
-      if (
-        this.validate(this.form, this.validation_rules, this.validation_errors)
-      ) {
-        this.router.push("/empty");
-        this.saveEmail();
-        this.savePassword();
-        this.saveUsername();
-      } else {
-      }
-    },
-    saveUsername(){
-      let usernames = JSON.parse(localStorage.getItem("localUsername")) || [];
-      const newUsername = this.form.username;
-      if(!usernames.includes(newUsername)){
-        usernames.push(newUsername);
-        localStorage.setItem("localUsername",JSON.stringify(usernames));
-      }
-    },
-    saveEmail() {
-      let emails = JSON.parse(localStorage.getItem("localEmails")) || [];
-      const newEmail = this.form.email;
-      if (!emails.includes(newEmail)) {
-        emails.push(newEmail);
-        localStorage.setItem("localEmails", JSON.stringify(emails));
-      }
-    },
-    savePassword() {
-      let passwords = JSON.parse(localStorage.getItem("localPasswords")) || [];
-      const newPassword = this.form.password;
-      if (!passwords.includes(newPassword)) {
-        passwords.push(newPassword);
-        localStorage.setItem("localPasswords", JSON.stringify(passwords));
-      }
+  log() {
+    this.$router.push("/");
+  },
+  empt() {
+    if (this.validation === false) {
+      console.log("error");
+    }
+  },
+  register() {
+    if (
+      this.validate(this.form, this.validation_rules, this.validation_errors)
+    ) {
+      this.saveUser();
+    } else {
+    }
+  },
+  saveUser() {
+    const newuser = {
+      email: this.form.email,
+      password: this.form.password,
+    };
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const isRegistered = users.some(user => user.email === this.form.email);
+
+    if (isRegistered) {
+      this.validation_errors.email = ["Böyle bir email zaten var."];
+    } else {
+      users.push(newuser);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      this.router.push("/");
+
+      localStorage.setItem("user", this.form.email);
+    }
+  },
+    auth() {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+
+      localStorage.setItem("user", this.form.email);
     },
   },
   setup(props) {
@@ -140,10 +144,8 @@ export default {
   justify-content: center;
   align-items: start;
   flex-direction: column;
-  overflow-x:  hidden;
+  overflow-x: hidden;
   box-shadow: 0 0 7px black;
-
-
 
   @apply p-3 rounded-2xl;
 }
@@ -188,7 +190,6 @@ export default {
   display: flex;
   border-radius: 5px;
   box-shadow: 0 0 3px black;
-
 }
 
 label {
@@ -204,6 +205,4 @@ label {
   font-size: 15px;
   color: whitesmoke;
 }
-
 </style>
-

@@ -1,7 +1,6 @@
 <template>
   <div class="container">
-    <form @submit.prevent="login" class="form-panel" >
-      
+    <form @submit.prevent="login" class="form-panel">
       <!-- Email -->
       <label for="email">Email: </label>
       <input class="form-input" type="text" id="email" v-model="form.email" />
@@ -71,31 +70,29 @@ export default {
     },
     login() {
       if (this.validate(this.form, this.validation_rules, this.validation_errors)) {
-        this.router.push("/empty");
-        this.saveEmail();
-        this.savePassword();
-      } else {
+        if (this.checkUser()) {
+          alert("Giriş Başarılı");
+          this.$router.push("/empty");
+        } else {
+          alert("Bilgileriniz Hatalı");
+        }
       }
     },
-    saveEmail() {
-      let emails = JSON.parse(sessionStorage.getItem("sessionEmails")) || [];
-      const newEmail = this.form.email;
-      if (!emails.includes(newEmail)) {
-        emails.push(newEmail);
-        sessionStorage.setItem("sessionEmails", JSON.stringify(emails));
-      }
+    checkUser() {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      return users.some(user => user.email === this.form.email && user.password === this.form.password);
     },
-    savePassword() {
-      let passwords = JSON.parse(sessionStorage.getItem("sessionPasswords")) || [];
-      const newPassword = this.form.password;
-      if (!passwords.includes(newPassword)) {
-        passwords.push(newPassword);
-        sessionStorage.setItem("sessionPasswords", JSON.stringify(passwords));
-      }
-    },
+    auth() {
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+      let email = this.form.email;  
+      let password = this.form.password;
 
-},
-setup(props) {
+      let user = users.find(function(user){
+        return user.email === email && user.password === password;
+      });
+    },
+  },
+  setup(props) {
     const router = useRouter();
 
     return {
@@ -105,6 +102,7 @@ setup(props) {
   },
 };
 </script>
+
 
 <style scoped>
 .form-panel {
@@ -116,7 +114,7 @@ setup(props) {
   justify-content: center;
   align-items: start;
   flex-direction: column;
-  overflow-x:  hidden;
+  overflow-x: hidden;
   box-shadow: 0 0 7px black;
 
   @apply p-3 rounded-2xl;
@@ -137,7 +135,6 @@ setup(props) {
   align-items: center;
   font-size: 18px;
   box-shadow: 0 0 3px black;
-
 }
 
 .button:hover {
@@ -163,7 +160,6 @@ setup(props) {
   display: flex;
   border-radius: 5px;
   box-shadow: 0 0 3px black;
-
 }
 
 label {
@@ -179,5 +175,4 @@ label {
   font-size: 15px;
   color: whitesmoke;
 }
-
 </style>
